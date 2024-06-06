@@ -6,8 +6,14 @@ const cors = require('cors');
 
 const app = express();
 
+// Use cors middleware
+app.use(cors({
+    origin: 'https://gclient2.onrender.com', // Update this to your frontend URL
+    methods: 'GET,POST,PUT,DELETE',
+    allowedHeaders: 'Content-Type,Authorization'
+}));
+
 app.use(bodyParser.json());
-app.use(cors());
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
