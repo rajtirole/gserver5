@@ -37,12 +37,13 @@ app.get('/oauth2callback', async (req, res) => {
             redirect_uri: REDIRECT_URI
         });
         const accessToken = tokenResponse.data.access_token;
-        res.redirect(`${REDIRECT_URI}?access_token=${accessToken}`);
+        res.redirect(`${FRONTEND_REDIRECT_URI}?access_token=${accessToken}`);
     } catch (error) {
         console.error('Error getting access token:', error);
         res.status(500).send('Error getting access token');
     }
 });
+
 
 app.get('/reviews', async (req, res) => {
     const accessToken = req.query.access_token;
