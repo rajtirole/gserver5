@@ -20,6 +20,7 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
 const ACCOUNT_ID = process.env.ACCOUNT_ID;
 const LOCATION_ID = process.env.LOCATION_ID;
+const FRONTEND_REDIRECT_URI = process.env.FRONTEND_REDIRECT_URI;
 
 app.get('/login', (req, res) => {
     const authUri = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=https://www.googleapis.com/auth/business.manage`;
