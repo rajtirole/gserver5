@@ -9,7 +9,7 @@ const app = express();
 
 // Use cors middleware
 app.use(cors({
-    origin: 'http://localhost:3000', // Update this to your frontend URL
+    origin: 'https://gclient2.onrender.com', // Update this to your frontend URL
     methods: 'GET,POST,PUT,DELETE',
     allowedHeaders: 'Content-Type,Authorization'
 }));
@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const REDIRECT_URI = 'http://localhost:5000/auth/google/callback'
+const REDIRECT_URI = 'https://gserver5.onrender.com/auth/google/callback'
 const FRONTEND_REDIRECT_URI = process.env.FRONTEND_REDIRECT_URI;
 
 app.get('/login', (req, res) => {
