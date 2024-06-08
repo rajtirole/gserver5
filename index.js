@@ -18,17 +18,19 @@ app.use(bodyParser.json());
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const REDIRECT_URI = 'https://gserver5.onrender.com/auth/google/callback'
-const FRONTEND_REDIRECT_URI = 'https://gclient2.onrender.com';
+const REDIRECT_URI = 'https://gserver5.onrender.com/auth/google/callback'; // Your backend callback URL
+const FRONTEND_REDIRECT_URI = 'https://gclient2.onrender.com'; // Your frontend URL
 
 app.get('/login', (req, res) => {
-    const authUri = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email`;
+    const authUri = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/business.manage`;
     res.redirect(authUri);
 });
 
 app.get('/auth/google/callback', async (req, res) => {
     const code = req.query.code;
+    console.log(code);
     try {
+        // Exchange authorization code for access token
         const tokenResponse = await axios.post('https://oauth2.googleapis.com/token', {
             client_id: CLIENT_ID,
             client_secret: CLIENT_SECRET,
@@ -37,17 +39,38 @@ app.get('/auth/google/callback', async (req, res) => {
             redirect_uri: REDIRECT_URI
         });
         const accessToken = tokenResponse.data.access_token;
+        console.log(accessToken);
 
         // Fetch user data
         const userResponse = await axios.get('https://www.googleapis.com/oauth2/v1/userinfo?alt=json', {
             headers: { Authorization: `Bearer ${accessToken}` }
         });
-
         const userData = userResponse.data;
-        res.redirect(`${FRONTEND_REDIRECT_URI}?access_token=${accessToken}&user=${encodeURIComponent(JSON.stringify(userData))}`);
+        console.log(userData);
+
+        // Fetch account and location ID
+        const accountsResponse = await axios.get('https://mybusiness.googleapis.com/v4/accounts', {
+            headers: { Authorization: `Bearer ${accessToken}` }
+        });
+        const accountId = accountsResponse.data.accounts[0].name; // Assuming the first account
+        console.log(accountId);
+        const locationsResponse = await axios.get(`https://mybusiness.googleapis.com/v4/${accountId}/locations`, {
+            headers: { Authorization: `Bearer ${accessToken}` }
+        });
+        const locationId = locationsResponse.data.locations[0].name; // Assuming the first location
+        console.log(locationId);
+
+        // Fetch reviews
+        const reviewsResponse = await axios.get(`https://mybusiness.googleapis.com/v4/${locationId}/reviews`, {
+            headers: { Authorization: `Bearer ${accessToken}` }
+        });
+        const reviews = reviewsResponse.data.reviews;
+        console.log(reviews);
+        // Redirect to frontend with user data and reviews
+        res.redirect(`${FRONTEND_REDIRECT_URI}/reviews?access_token=${accessToken}&user=${encodeURIComponent(JSON.stringify(userData))}&reviews=${encodeURIComponent(JSON.stringify(reviews))}`);
     } catch (error) {
-        console.error('Error getting access token:', error);
-        res.status(500).send('Error getting access token');
+        console.error('Error during OAuth callback:', error);
+        res.status(500).send('Error during OAuth callback');
     }
 });
 
