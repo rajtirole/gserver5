@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = 'https://gserver5.onrender.com/auth/google/callback'
-const FRONTEND_REDIRECT_URI = process.env.FRONTEND_REDIRECT_URI;
+const FRONTEND_REDIRECT_URI = 'https://gclient2.onrender.com';
 
 app.get('/login', (req, res) => {
     const authUri = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email`;
